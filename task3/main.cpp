@@ -6,100 +6,81 @@
 void main()
 {
 	using namespace std;
-	//получение трех файлов
+	//получение файла
 
-	
-
-	string strInputFile1, strInputFile2, strInputFileAlpa;
-	string strOutputFile = "task3_proc.png";
-	
-	cout << "File A: ";
-	getline(cin, strInputFile1);
-	cout << "File B: ";
-	getline(cin, strInputFile2);
-	cout << "File Alpha: ";
-	getline(cin, strInputFileAlpa);
+	string strInputFile;
+	cout << "File: ";
+	getline(cin, strInputFile);
 
 
-	unsigned char* pInBytes1, * pInBytes2, * pInBytesAlpha;
+	//получение имени нового файла
 
-	CBitsPtrGuard PtrGrd1(&pInBytes1), PtrGrd2(&pInBytes2), PtrGrd(&pInBytesAlpha);
+	std::string strOutputFile(strInputFile);
+	int dotPos = strOutputFile.find_last_of('.');
+	strOutputFile.insert(dotPos, "_proc");
 
-	size_t nSizeIF1, nSizeIF2, nSizeIFA;
+	unsigned char* pInBytes;
 
-	nSizeIF1 = NPngProc::readPngFile(strInputFile1.c_str(), 0, 0, 0, 0);
-	nSizeIF2 = NPngProc::readPngFile(strInputFile2.c_str(), 0, 0, 0, 0);
-	nSizeIFA = NPngProc::readPngFile(strInputFileAlpa.c_str(), 0, 0, 0, 0);
+	size_t nSizeIF;
 
-	if ((nSizeIF1 == NPngProc::PNG_ERROR) ||
-		(nSizeIF2 == NPngProc::PNG_ERROR) ||
-		(nSizeIFA == NPngProc::PNG_ERROR))
+	nSizeIF = NPngProc::readPngFile(strInputFile.c_str(), 0, 0, 0, 0);
+
+	if ((nSizeIF == NPngProc::PNG_ERROR))
 	{
 		cout << "Error reading file. Abort." << endl;
 		getchar();
 		return;
 	}
 
-	pInBytes1 = new unsigned char[nSizeIF1];
-	pInBytes2 = new unsigned char[nSizeIF2];
-	pInBytesAlpha = new unsigned char[nSizeIFA];
+	pInBytes = new unsigned char[nSizeIF];
 
-	if (!(pInBytes1 && pInBytes2 &&pInBytesAlpha))
+	
+
+	if (!pInBytes)
 	{
-		cout << "Can not allocate memory. " << nSizeIF1 << " bytes required. Abort." << endl;
+		cout << "Can not allocate memory. " << nSizeIF << " bytes required. Abort." << endl;
 		getchar();
 		return;
 	}
-	
-	size_t nWidth1, nHeight1, nWidth2, nHeight2, nWidthA, nHeightA;
+
+	//CBitsPtrGuard PtrGrd(&pInBytes);
 	size_t nWidth, nHeight;
 
-	NPngProc::readPngFileGray(strInputFile1.c_str(), pInBytes1, &nWidth1, &nHeight1);
-	NPngProc::readPngFileGray(strInputFile2.c_str(), pInBytes2, &nWidth2, &nHeight2);
-	NPngProc::readPngFileGray(strInputFileAlpa.c_str(), pInBytesAlpha, &nWidthA, &nHeightA);
+	NPngProc::readPngFileGray(strInputFile.c_str(), pInBytes, &nWidth, &nHeight);
 
-	if (!((nWidth1 == nWidth2 == nWidthA) && (nHeight1 == nHeight2 == nHeightA)))
+
+	NPngProc::SImage in(pInBytes, nWidth, nHeight, 8);
+
+	int ch;
+
+	cout << "1 for additive noise " << endl << "2 for pulse noise" << endl;
+	cout << "Smth else to quit" << endl;
+	cin >> ch;
+
+	if (ch == 1)
 	{
-		cout << "Sizes of images must match. Abort." << endl;
-		getchar();
-		return;
+		double sigma, z0;
+		cout << "Sigma: ";
+		cin >> sigma;
+		cout << "z0: ";
+		cin >> z0;
+		//добавление аддитивного шума
+		AddNoise(in, z0, sigma);
 	}
-
-	nWidth = nWidth1;
-	nHeight = nHeight1;
-
-	NPngProc::SImage in1(pInBytes1, nWidth, nHeight, 8);
-	NPngProc::SImage in2(pInBytes2, nWidth, nHeight, 8);
-	NPngProc::SImage inAlpha(pInBytesAlpha, nWidth, nHeight, 8);
-
-	unsigned char* pOutBytes = new unsigned char[nSizeIF1];
-
-	if (!pOutBytes)
+	else if (ch == 2)
 	{
-		cout << "Can not allocate memory. " << nSizeIF1 << " bytes required. Abort." << endl;
-		getchar();
-		return;
+		double Ps;
+		cout << "Ps: ";
+		cin >> Ps;
+		//добавление импульсного шума
+		PulseNoise(in, Ps);
 	}
+	else return;
 
-	CBitsPtrGuard PtrGrdOut(&pOutBytes);
-
-	NPngProc::SImage out(pOutBytes, nWidth, nHeight, 8);
-
-	//добавление аддитивного шума
-	AddNoise(in1);
-	AddNoise(in2);
-
-	//добавление импульсного шума
-//	PulseNoise(in1);
-//	PulseNoise(in2);
-
-
-	//наложение изображений
-//	MixImages(in1, in2, inAlpha, out);
 
 	//сохранение в файле
 	if (NPngProc::writePngFile(strOutputFile.c_str(),
-		in1.pBits, in1.nWidth, in1.nHeight, 8)
+		in.pBits, in.nWidth, in.nHeight, 8)
 		== NPngProc::PNG_ERROR)
 	{
 		std::cout << "Unable to write .png file." << std::endl;
