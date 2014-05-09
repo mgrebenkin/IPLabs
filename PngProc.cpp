@@ -64,7 +64,7 @@ unsigned char* SImage::operator () (size_t x, size_t y)
 {
 	if ((x <= nWidth) && (y <= nHeight))
 	{
-		return pBits += (y - 1)*nBPP*nWidth + (x - 1)*nBPP;
+		return pBits + (y - 1)*nWidth + (x - 1);
 	}
 	else
 	{

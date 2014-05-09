@@ -7,7 +7,8 @@ class CBitsPtrGuard
 {
 public:
 	CBitsPtrGuard(unsigned char** pB) : m_ppBits(pB) { }
-	~CBitsPtrGuard() { if (*m_ppBits) delete *m_ppBits, *m_ppBits = 0; }
+	~CBitsPtrGuard() { if (*m_ppBits)
+		delete *m_ppBits, *m_ppBits = 0; }
 protected:
 	unsigned char** m_ppBits;
 };
