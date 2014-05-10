@@ -1,5 +1,5 @@
+#include "MixImages.h"
 #include "PngProc.h"
-#include "Noises.h"
 #include <iostream>
 #include <string>
 
@@ -7,8 +7,6 @@ void main()
 {
 	using namespace std;
 	//получение трех файлов
-
-	
 
 	string strInputFile1, strInputFile2, strInputFileAlpa;
 	string strOutputFile = "task3_proc.png";
@@ -22,8 +20,6 @@ void main()
 
 
 	unsigned char* pInBytes1, * pInBytes2, * pInBytesAlpha;
-
-	CBitsPtrGuard PtrGrd1(&pInBytes1), PtrGrd2(&pInBytes2), PtrGrd(&pInBytesAlpha);
 
 	size_t nSizeIF1, nSizeIF2, nSizeIFA;
 
@@ -51,6 +47,8 @@ void main()
 		return;
 	}
 	
+	CBitsPtrGuard PtrGrd1(&pInBytes1), PtrGrd2(&pInBytes2), PtrGrd(&pInBytesAlpha);
+
 	size_t nWidth1, nHeight1, nWidth2, nHeight2, nWidthA, nHeightA;
 	size_t nWidth, nHeight;
 
@@ -58,7 +56,8 @@ void main()
 	NPngProc::readPngFileGray(strInputFile2.c_str(), pInBytes2, &nWidth2, &nHeight2);
 	NPngProc::readPngFileGray(strInputFileAlpa.c_str(), pInBytesAlpha, &nWidthA, &nHeightA);
 
-	if (!((nWidth1 == nWidth2 == nWidthA) && (nHeight1 == nHeight2 == nHeightA)))
+	if (!((nWidth1 == nWidth2) && (nWidth2 == nWidthA) &&
+		(nHeight1 == nHeight2) && (nHeight2 == nHeightA)))
 	{
 		cout << "Sizes of images must match. Abort." << endl;
 		getchar();
@@ -85,27 +84,20 @@ void main()
 
 	NPngProc::SImage out(pOutBytes, nWidth, nHeight, 8);
 
-	//добавление аддитивного шума
-	AddNoise(in1);
-	AddNoise(in2);
-
-	//добавление импульсного шума
-//	PulseNoise(in1);
-//	PulseNoise(in2);
-
-
 	//наложение изображений
-//	MixImages(in1, in2, inAlpha, out);
+	MixImages(in1, in2, inAlpha, out);
 
 	//сохранение в файле
 	if (NPngProc::writePngFile(strOutputFile.c_str(),
-		in1.pBits, in1.nWidth, in1.nHeight, 8)
+		out.pBits, out.nWidth, out.nHeight, 8)
 		== NPngProc::PNG_ERROR)
 	{
 		std::cout << "Unable to write .png file." << std::endl;
 		std::getchar();
 		return;
 	}
+
+	cout << "Done. Name of the output file is " << strOutputFile << endl;
 
 	getchar();
 }

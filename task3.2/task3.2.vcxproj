@@ -75,9 +75,11 @@
   <ItemGroup>
     <ClCompile Include="..\PngProc.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MixImages.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\PngProc.h" />
+    <ClInclude Include="MixImages.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
