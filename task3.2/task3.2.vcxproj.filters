@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\PngProc.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MixImages.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PngProc.h" />
+    <ClInclude Include="MixImages.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{83bb44af-0bdc-4a3a-9801-36b9b02fd511}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
+    </Filter>
+    <Filter Include="Исходники">
+      <UniqueIdentifier>{ace33b70-7f3c-4a80-8ef5-182090061e6b}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
+    </Filter>
+  </ItemGroup>
+</Project>
